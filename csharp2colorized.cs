@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using System.Text;
+using System.Net;
 
 namespace CSharp2Colorized
 {
@@ -29,22 +31,27 @@ namespace CSharp2Colorized
 
     public class CSharp2Colorized
     {
-        private static void Main()
+        private static int Main(string[] args)
         {
-            var code = @"
-public class ColorizedWord
-{
-    public string Text;
-    public int Red;
-    public int Green;
-    public int Blue;
-    public bool IsItalic;
+            if (args.Count() == 0)
+            {
+                // pipe
+                using (var stream = new StreamReader(Console.OpenStandardInput()))
+                {
+                    var code = stream.ReadToEnd();
+                    Console.WriteLine(Lines2Html(ColorizeCSharp(code)));
+                    return 0;
+                }
+            }
 
-    public override string ToString() => Text;
-}
-";
-            var c = Lines2Html(ColorizeCSharp(code));
-            Console.WriteLine(c);
+            foreach (var fn in args)
+            {
+                if (args.Count() > 1) Console.WriteLine($"<h1>{WebUtility.HtmlEncode(Path.GetFileName(fn))}</h1>");
+                if (!File.Exists(fn)) {Console.Error.WriteLine($"Not found - {fn}"); return 1;}
+                var code = File.ReadAllText(fn);
+                Console.WriteLine(Lines2Html(ColorizeCSharp(code)));
+            }
+            return 0;
         }
 
         /// <summary>
@@ -68,7 +75,7 @@ public class ColorizedWord
                     if (color == "color:#000000") color = null;
                     if (word.IsItalic) sb.Append("<em>");
                     if (color != null) sb.Append($"<span style=\"{color}\">");
-                    sb.Append(System.Net.WebUtility.HtmlEncode(word.Text));
+                    sb.Append(WebUtility.HtmlEncode(word.Text));
                     if (color != null) sb.Append("</span>");
                     if (word.IsItalic) sb.Append("</em>");
                 }
