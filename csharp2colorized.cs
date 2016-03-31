@@ -44,10 +44,30 @@ namespace CSharp2Colorized
                 }
             }
 
+            // otherwise, assume command-line arguments tell us filenames
+            var fns = new List<string>();
             foreach (var fn in args)
             {
-                if (args.Count() > 1) Console.WriteLine($"<h1>{WebUtility.HtmlEncode(Path.GetFileName(fn))}</h1>");
-                if (!File.Exists(fn)) {Console.Error.WriteLine($"Not found - {fn}"); return 1;}
+                if (!fn.Contains("*") && !fn.Contains("?"))
+                {
+                    if (!File.Exists(fn)) { Console.Error.WriteLine($"Not found - {fn}"); return 1; }
+                    fns.Add(fn);
+                }
+                else
+                {
+                    string dir = Path.GetDirectoryName(fn), filename = Path.GetFileName(fn);
+                    if (dir.Contains("*") || dir.Contains("?")) { Console.Error.WriteLine("Can't match wildcard directory names"); return 1; }
+                    if (dir == "") dir = Directory.GetCurrentDirectory();
+                    if (!Directory.Exists(dir)) { Console.Error.WriteLine($"Not found - \"{dir}\""); return 1; }
+                    var fns2 = Directory.GetFiles(dir, filename);
+                    if (fns2.Length == 0) { Console.Error.WriteLine($"Not found - \"{fn}\""); return 1; }
+                    fns.AddRange(fns2);
+                }
+            }
+
+            foreach (var fn in fns)
+            {
+                if (fns.Count() > 1) Console.WriteLine($"<h1>{WebUtility.HtmlEncode(Path.GetFileName(fn))}</h1>");
                 var code = File.ReadAllText(fn);
                 Console.WriteLine(Lines2Html(ColorizeCSharp(code)));
             }
@@ -79,7 +99,8 @@ namespace CSharp2Colorized
                     if (color != null) sb.Append("</span>");
                     if (word.IsItalic) sb.Append("</em>");
                 }
-                sb.AppendLine();
+                // workaround for https://github.com/dotnet/corefx/issues/7409
+                sb.AppendLine(line.Words.Count>0 ? "" : " ");
             }
             sb.AppendLine("</pre>");
             return sb.ToString();
