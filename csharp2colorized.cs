@@ -31,9 +31,29 @@ namespace CSharp2Colorized
 
     public class CSharp2Colorized
     {
-        private static int Main(string[] args)
+        private static int Main(string[] args0)
         {
-            if (args.Count() == 0)
+            var args = new List<string>(args0);
+            Func<string, IEnumerable<ColorizedLine>> converter = ColorizeCSharp;
+            if (args.Count > 0 && new[] { "-txt", "--txt", "-text", "--text" }.Contains(args[0]))
+            {
+                converter = ColorizePlainText; args.RemoveAt(0);
+            }
+            else if (args.Count > 0 && new[] { "-vb", "--vb" }.Contains(args[0]))
+            {
+                converter = ColorizeCSharp; args.RemoveAt(0);
+            }
+            else if (args.Count > 0 && new[] { "-csharp", "--csharp", "-c#", "--c#", "-cs", "--cs" }.Contains(args[0]))
+            {
+                converter = ColorizeCSharp; args.RemoveAt(0);
+            }
+            else if (args.Count > 0 && args[0].StartsWith("-"))
+            {
+                Console.WriteLine("usage: csharp2colorized [-cs | -vb | -text] [files]");
+                return 0;
+            }
+
+            if (args.Count == 0)
             {
                 // pipe
                 using (var stream = new StreamReader(Console.OpenStandardInput()))
@@ -67,7 +87,7 @@ namespace CSharp2Colorized
 
             foreach (var fn in fns)
             {
-                if (fns.Count() > 1) Console.WriteLine($"<h1>{WebUtility.HtmlEncode(Path.GetFileName(fn))}</h1>");
+                if (fns.Count > 1) Console.WriteLine($"<h1>{WebUtility.HtmlEncode(Path.GetFileName(fn))}</h1>");
                 var code = File.ReadAllText(fn);
                 Console.WriteLine(Lines2Html(ColorizeCSharp(code)));
             }

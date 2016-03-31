@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{161588A5-62DB-43BF-87F9-0B271313D73B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{E3EABE0C-9B19-43A4-B0C6-8DB297D2FEA9}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>csharp2colorized</RootNamespace>
     <AssemblyName>csharp2colorized</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,15 +21,16 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\csharp2colorized.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\csharp2colorized.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,17 +48,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="csharp2colorized.nuspec" />
+    <None Include="csharp2colorized.runtimeconfig.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <Content Include="csharp2colorized.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
   <Target Name="AfterBuild">
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\lib\net45\csharp2colorized.dll" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\lib\net45\csharp2colorized.xml" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\lib\net45\csharp2colorized.pdb" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.dll" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.xml" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.pdb" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.runtimeconfig.json" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.runtimeconfig.json" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.nuspec" DestinationFiles="bin\$(Configuration)\nupkg\csharp2colorized.nuspec" />
+    <Exec Command="$(UserProfile)\.nuget\packages\nuget.commandline\3.3.0\tools\NuGet.exe pack csharp2colorized.nuspec -OutputDirectory .." WorkingDirectory="bin\$(Configuration)\nupkg" Outputs="bin\$(Configuration)\*.nupkg" />
   </Target>
-  -->
 </Project>
