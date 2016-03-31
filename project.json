@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0-*",
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "Microsoft.CodeAnalysis": "2.0.0-beta1",
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0-rc2-23930"
+    }
+  },
+  "frameworks": {
+    "netstandard1.5": {"imports" : "portable-net45+win81"}
+  }
+}
