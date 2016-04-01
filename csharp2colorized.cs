@@ -8,11 +8,9 @@ using Microsoft.CodeAnalysis;
 using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace CSharp2Colorized
 {
-
     public class ColorizedWord
     {
         public string Text;
@@ -31,47 +29,42 @@ namespace CSharp2Colorized
     }
 
 
-    public class CSharp2Colorized
+    public static class Colorize
     {
         private static int Main(string[] args0)
         {
-            //var cc = "From x In y";
-            //var pre = Lines2Html(ColorizeVB(cc));
-            //Console.WriteLine(pre);
-            //return 0;
-
             var args = new List<string>(args0);
-            Func<string, IEnumerable<ColorizedLine>> converter = null;
-            if (args.Count > 0 && new[] { "-txt", "--txt", "-text", "--text" }.Contains(args[0]))
+            Action<IEnumerable<string>> converter = null;
+            if (args.Count == 1 && new[] { "-vb", "--vb" }.Contains(args[0]))
             {
-                converter = ColorizePlainText; args.RemoveAt(0);
+                converter = lines => Console.WriteLine(Lines2Html(VB(string.Join("",lines)))); args.RemoveAt(0);
             }
-            else if (args.Count > 0 && new[] { "-vb", "--vb" }.Contains(args[0]))
+            else if (args.Count == 1 && new[] { "-csharp", "--csharp", "-c#", "--c#", "-cs", "--cs" }.Contains(args[0]))
             {
-                converter = ColorizeVB; args.RemoveAt(0);
+                converter = lines => Console.WriteLine(Lines2Html(CSharp(string.Join("",lines)))); args.RemoveAt(0);
             }
-            else if (args.Count > 0 && new[] { "-csharp", "--csharp", "-c#", "--c#", "-cs", "--cs" }.Contains(args[0]))
+            else if (args.Count == 1 && new[] { "-md", "--md" }.Contains(args[0]))
             {
-                converter = ColorizeCSharp; args.RemoveAt(0);
+                converter = ColorizeMd; args.RemoveAt(0);
             }
-            else if (args.Count > 0 && args[0].StartsWith("-"))
+            else if (args.Any(a => a.StartsWith("-")) || (converter != null && args.Any()))
             {
-                Console.WriteLine("usage: csharp2colorized [-cs | -vb | -text] [files]");
+                Console.WriteLine("usage: csharp2colorized [-cs|-vb|-md] | [files]");
                 return 0;
             }
 
             if (args.Count == 0)
             {
                 // pipe
-                using (var stream = new StreamReader(Console.OpenStandardInput()))
-                {
-                    var code = stream.ReadToEnd();
-                    Console.WriteLine(Lines2Html((converter ?? ColorizeCSharp)(code)));
-                    return 0;
-                }
+                if (converter == null) converter = lines => Console.WriteLine(Lines2Html(CSharp(string.Join("",lines))));
+                converter(Console2Enumerable());
+                return 0;
             }
 
+
             // otherwise, assume command-line arguments tell us filenames
+            // (and sume that converter == null)
+
             var fns = new List<string>();
             foreach (var fn in args)
             {
@@ -82,6 +75,7 @@ namespace CSharp2Colorized
                 }
                 else
                 {
+                    // Windows command-shell doesn't do globbing, so we have to do it ourselves
                     string dir = Path.GetDirectoryName(fn), filename = Path.GetFileName(fn);
                     if (dir.Contains("*") || dir.Contains("?")) { Console.Error.WriteLine("Can't match wildcard directory names"); return 1; }
                     if (dir == "") dir = Directory.GetCurrentDirectory();
@@ -95,61 +89,92 @@ namespace CSharp2Colorized
             foreach (var fn in fns)
             {
                 if (fns.Count > 1) Console.WriteLine($"<h1>{WebUtility.HtmlEncode(Path.GetFileName(fn))}</h1>");
-                var ext = Path.GetExtension(fn).ToLower();
-                Func<string, IEnumerable<ColorizedLine>> extconverter = null;
-                if (ext == ".vb" || ext == ".vbx" || ext == "bas") extconverter = ColorizeVB;
-                else if (ext == ".cs" || ext == ".csx") extconverter = ColorizeCSharp;
-                else if (ext == ".txt" || ext == ".html" || ext == ".json") extconverter = ColorizePlainText;
-                else extconverter = ColorizeCSharp;
                 var code = File.ReadAllText(fn);
-                if (ext == ".md") ColorizeMd(code, converter ?? ColorizeCSharp);
-                else Console.WriteLine(Lines2Html((converter ?? extconverter)(code)));
+                var ext = Path.GetExtension(fn).ToLower();
+                if (ext == ".vb" || ext == ".vbx" || ext == "bas") Console.WriteLine(Lines2Html(VB(code)));
+                else if (ext == ".cs" || ext == ".csx") Console.WriteLine(Lines2Html(CSharp(code)));
+                else if (ext == ".md") ColorizeMd(String2Enumerable(code));
+                else { Console.Error.WriteLine($"Don't know how to colorize - \"{fn}\""); continue; }
             }
             return 0;
         }
 
-        private static void ColorizeMd(string src, Func<string, IEnumerable<ColorizedLine>> defaultConverter)
+        private static IEnumerable<string> Console2Enumerable()
         {
-            string lang = null, fence = null, indent = null;
-            StringBuilder cb = null;
-            var lines = src.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            while (true)
+            {
+                var s = Console.ReadLine();
+                if (s == null) yield break;
+                yield return s + Environment.NewLine;
+            }
+        }
+
+        private static IEnumerable<string> String2Enumerable(string s)
+        {
+            int istart = 0; string b = null;
+            for (int i=0; i<s.Length; i++)
+            {
+                if (s[i] == '\r' && i + 1 < s.Length && s[i + 1] == '\n') b = "\r\n";
+                else if (s[i] == '\r') b = "\r";
+                else if (s[i] == '\n') b = "\n";
+                else continue;
+                yield return s.Substring(istart, i + b.Length - istart);
+                istart = i + b.Length;
+                i = istart;
+            }
+            if (istart < s.Length) yield return s.Substring(istart);
+        }
+
+        private static void ColorizeMd(IEnumerable<string> lines)
+        {
+            string lang = null, fence = null, indent = null, terminator = "";
+            StringBuilder fb = null, cb = null;
             foreach (var line in lines)
             {
-                if (lang == null) // non-codeblock
+                if (cb == null) // non-codeblock
                 {
-                    MdIsFenceStart(line, out lang, out fence, out indent);
-                    if (lang == null) Console.WriteLine(line);
-                    else cb = new StringBuilder();
+                    MdIsFenceStart(line, out lang, out fence, out indent, out terminator);
+                    if (lang == null) Console.Write(line);
+                    else { fb = new StringBuilder(); fb.Append(line); cb = new StringBuilder(); }
                 }
                 else // codeblock
                 {
-                    var line2 = MdRemoveFenceIndent(line, indent);
-                    if (!MdIsFenceEnd(line2, fence)) cb.AppendLine(line2);
-                    else
-                    {
-                        Func<string, IEnumerable<ColorizedLine>> converter = defaultConverter;
-                        if (lang == "csharp" || lang == "cs" || lang == "c#" || lang == "csx") converter = ColorizeCSharp;
-                        else if (lang == "vb" || lang == "vb.net" || lang == "vbnet") converter = ColorizeVB;
-                        else if (lang != "") converter = ColorizePlainText;
-                        var pre = Lines2Html(converter(cb.ToString())).Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                        Console.WriteLine(pre[0].Replace("<pre>", "<pre>" + indent));
-                        for (int i = 1; i < pre.Length; i++) Console.WriteLine(indent + pre[i]);
-                        lang = null;
-                    }
+                    fb.Append(line);
+                    var line2 = MdRemoveFenceIndent(line.TrimEnd("\r\n".ToCharArray()), indent);
+                    if (!MdIsFenceEnd(line2, fence)) { cb.AppendLine(line2); continue; }
+                    //
+                    Func<string, IEnumerable<ColorizedLine>> converter = null;
+                    if (lang == "csharp" || lang == "cs" || lang == "c#" || lang == "csx") converter = CSharp;
+                    else if (lang == "vb" || lang == "vb.net" || lang == "vbnet") converter = VB;
+                    else { cb = null; Console.Write(fb.ToString()); continue; }
+                    //
+                    var code = cb.ToString();
+                    var cols = converter(code);
+                    var html = Lines2Html(cols);
+                    var pre = html.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    var ss = pre.Take(1).Select(s => s.Replace("<pre>", "<pre>" + indent))
+                             .Concat(pre.Skip(1).Select(s => indent + s));
+                    var tt = string.Join(terminator, ss);
+                    Console.Write(tt);
+                    cb = null;
                 }
             }
         }
 
-        private static Regex MdFenceStart = new Regex("( *)((?<back>````*)|(?<tilde>~~~~*)) *([^ ]*)");
+        private static Regex MdFenceStart = new Regex("^( *)((?<back>````*)|(?<tilde>~~~~*)) *([^ \r\n]*)");
 
-        private static bool MdIsFenceStart(string line, out string lang, out string fence, out string indent)
+        private static bool MdIsFenceStart(string line, out string lang, out string fence, out string indent, out string terminator)
         {
-            lang = null; fence = null; indent = null;
+            lang = null; fence = null; indent = null; terminator = null;
             var m = MdFenceStart.Match(line);
             if (!m.Success) return false;
             indent = m.Groups[1].Value;
             fence = m.Groups[2].Value;
             lang = m.Groups[3].Value;
+            if (line.EndsWith("\r\n")) terminator = "\r\n";
+            else if (line.EndsWith("\r")) terminator = "\r";
+            else if (line.EndsWith("\n")) terminator = "\n";
+            else terminator = "\r\n";
             return true;
         }
 
@@ -175,13 +200,13 @@ namespace CSharp2Colorized
         /// <summary>
         /// Colorizes a fragment of C# code
         /// </summary>
-        public static IEnumerable<ColorizedLine> ColorizeCSharp(string code) =>
+        public static IEnumerable<ColorizedLine> CSharp(string code) =>
             Words2Lines(CSharpSpecific.CSharpColorizingWalker.ColorizeInternal(code));
 
-        public static IEnumerable<ColorizedLine> ColorizeVB(string code) =>
+        public static IEnumerable<ColorizedLine> VB(string code) =>
             Words2Lines(VBSpecific.VBColorizingWalker.ColorizeInternal(code));
 
-        public static IEnumerable<ColorizedLine> ColorizePlainText(string src) =>
+        public static IEnumerable<ColorizedLine> PlainText(string src) =>
             Words2Lines(ColorizePlainTextInternal(src));
 
         public static string Lines2Html(IEnumerable<ColorizedLine> lines)
