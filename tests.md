@@ -1,4 +1,4 @@
-<h2>Test1</h2>
+﻿<h2>Test1</h2>
 ```vb
 <AttributeUsage(AttributeTargets.All)> _
 Public Class HelpAttribute
@@ -11991,7 +11991,7 @@ class Test
     static void SplitPath(string path, out string dir, out string name) {
         int i = path.Length;
         while (i > 0) {
-            char ch = path[i – 1];
+            char ch = path[i - 1];
             if (ch == '\\' || ch == '/' || ch == ':') break;
             i--;
         }
@@ -12368,7 +12368,7 @@ public static class Extensions
     }
 
     public static T[] Slice<T>(this T[] source, int index, int count) {
-        if (index < 0 || count < 0 || source.Length – index < count)
+        if (index < 0 || count < 0 || source.Length - index < count)
             throw new ArgumentException();
         T[] result = new T[count];
         Array.Copy(source, index, result, 0, count);
@@ -12816,7 +12816,7 @@ b.Click += new EventHandler(...);
 
 <h2>Test753</h2>
 ```csharp
-b.Click –= new EventHandler(...);
+b.Click -= new EventHandler(...);
 ```
 
 <h2>Test754</h2>
@@ -13163,7 +13163,7 @@ class B: A
         items.Add("default");
     }
 
-    public B(int n): base(n – 1) {
+    public B(int n): base(n - 1) {
         max = n;
     }
 }
@@ -13203,10 +13203,10 @@ class B: A
         items.Add("default");
     }
 
-    public B(int n): base(n – 1) {
+    public B(int n): base(n - 1) {
         sqrt2 = Math.Sqrt(2.0);      // Variable initializer
         items = new ArrayList(100);  // Variable initializer
-        A(n – 1);                    // Invoke A(int) constructor
+        A(n - 1);                    // Invoke A(int) constructor
         max = n;
     }
 }
@@ -13776,9 +13776,9 @@ int c = (int) b;    // explicit conversion from long to int
 object o  = "object"
 dynamic d = "dynamic";
 
-string s1 = o; // Fails at compile-time – no conversion exists
+string s1 = o; // Fails at compile-time - no conversion exists
 string s2 = d; // Compiles and succeeds at run-time
-int i     = d; // Compiles but fails at run-time – no conversion exists
+int i     = d; // Compiles but fails at run-time - no conversion exists
 ```
 
 <h2>Test793</h2>
@@ -14019,9 +14019,9 @@ class Test
     static void G() {
         D1 d1 = F;            // Ok
         D2 d2 = F;            // Ok
-        D3 d3 = F;            // Error – not applicable
-        D4 d4 = F;            // Error – not applicable in normal form
-        D5 d5 = F;            // Error – applicable but not compatible
+        D3 d3 = F;            // Error - not applicable
+        D4 d4 = F;            // Error - not applicable in normal form
+        D5 d5 = F;            // Error - applicable but not compatible
 
     }
 }
@@ -17915,7 +17915,7 @@ static void Main(string[] args) {
         Console.WriteLine(e.Message);
     }
     finally {
-        Console.WriteLine(“Good bye!”);
+        Console.WriteLine("Good bye!");
     }
 }
 ```
@@ -20315,11 +20315,11 @@ public struct DBBool
     public static readonly DBBool False = new DBBool(-1);
     public static readonly DBBool True = new DBBool(1);
 
-    // Private field that stores –1, 0, 1 for False, Null, True.
+    // Private field that stores -1, 0, 1 for False, Null, True.
 
     sbyte value;
 
-    // Private instance constructor. The value parameter must be –1, 0, or 1.
+    // Private instance constructor. The value parameter must be -1, 0, or 1.
 
     DBBool(int value) {
         this.value = (sbyte)value;

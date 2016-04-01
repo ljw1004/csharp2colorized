@@ -134,8 +134,9 @@ namespace CSharp2Colorized
                 if (cb == null) // non-codeblock
                 {
                     MdIsFenceStart(line, out lang, out fence, out indent, out terminator);
-                    if (lang == null) Console.Write(line);
+                    if (lang == null) { Console.Write(string.IsNullOrWhiteSpace(line) ? " "+line : line); }
                     else { fb = new StringBuilder(); fb.Append(line); cb = new StringBuilder(); }
+                    // the IsNullOrWhitespace is to workaround this: https://github.com/dotnet/corefx/issues/7409
                 }
                 else // codeblock
                 {
