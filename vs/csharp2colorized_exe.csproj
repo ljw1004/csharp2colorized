@@ -49,6 +49,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\tests.md">
+      <Link>tests.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
