@@ -102,7 +102,7 @@ namespace CSharp2Colorized
                 else if (ext == ".txt" || ext == ".html" || ext == ".json") extconverter = ColorizePlainText;
                 else extconverter = ColorizeCSharp;
                 var code = File.ReadAllText(fn);
-                if (ext == ".md") ColorizeMd(code, converter);
+                if (ext == ".md") ColorizeMd(code, converter ?? ColorizeCSharp);
                 else Console.WriteLine(Lines2Html((converter ?? extconverter)(code)));
             }
             return 0;

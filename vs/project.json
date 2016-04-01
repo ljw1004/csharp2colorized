@@ -7,7 +7,7 @@
     "win": {}
   },
   "dependencies": {
-    "Microsoft.CodeAnalysis": "2.0.0-beta1",
+    "Microsoft.CodeAnalysis": "1.2.1",
     "NuGet.CommandLine": "3.3.0"
   }
 }

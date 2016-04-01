@@ -2,7 +2,7 @@
 <package>
  <metadata>
     <id>csharp2colorized</id>
-    <version>1.0.0.0-beta1</version>
+    <version>1.0.0.1</version>
     <title>Colorizer for C#/VB</title>
     <authors>Lucian Wischik</authors>
     <owners>Lucian Wischik</owners>
@@ -15,11 +15,7 @@
     <tags>C# csharp VB colorizer highlighting syntax roslyn</tags>
     <dependencies>
       <group targetFramework="net">
-		<dependency id="Microsoft.CodeAnalysis" version="[2.0.0-beta1, )" />
-      </group>
-      <group targetFramework=".NETStandard1.5">
-        <dependency id="Microsoft.NETCore.App" version="[1.0.0-rc2-23930, )" />
-		<dependency id="Microsoft.CodeAnalysis" version="[2.0.0-beta1, )" />
+		    <dependency id="Microsoft.CodeAnalysis" version="[1.2.1, )" />
       </group>
     </dependencies>
  </metadata>

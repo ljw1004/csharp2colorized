@@ -48,8 +48,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="csharp2colorized.nuspec" />
+    <None Include="csharp2colorized.beta.nuspec" />
     <None Include="csharp2colorized.runtimeconfig.json" />
+    <None Include="csharp2colorized.stable.nuspec" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -57,14 +58,19 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\lib\net45\csharp2colorized.dll" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\lib\net45\csharp2colorized.xml" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\lib\net45\csharp2colorized.pdb" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.dll" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.xml" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.pdb" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.runtimeconfig.json" DestinationFiles="bin\$(Configuration)\nupkg\lib\netstandard1.5\csharp2colorized.runtimeconfig.json" />
-    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.nuspec" DestinationFiles="bin\$(Configuration)\nupkg\csharp2colorized.nuspec" />
-    <Exec Command="$(UserProfile)\.nuget\packages\nuget.commandline\3.3.0\tools\NuGet.exe pack csharp2colorized.nuspec -OutputDirectory .." WorkingDirectory="bin\$(Configuration)\nupkg" Outputs="bin\$(Configuration)\*.nupkg" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\stable\lib\net45\csharp2colorized.dll" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\stable\lib\net45\csharp2colorized.xml" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\stable\lib\net45\csharp2colorized.pdb" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.stable.nuspec" DestinationFiles="bin\$(Configuration)\nupkg\stable\csharp2colorized.nuspec" />
+    <Exec Command="$(UserProfile)\.nuget\packages\nuget.commandline\3.3.0\tools\NuGet.exe pack csharp2colorized.nuspec -OutputDirectory ..\.." WorkingDirectory="bin\$(Configuration)\nupkg\stable" Outputs="bin\$(Configuration)\*.nupkg" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\net45\csharp2colorized.dll" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\net45\csharp2colorized.xml" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\net45\csharp2colorized.pdb" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.dll" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\netstandard1.5\csharp2colorized.dll" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.xml" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\netstandard1.5\csharp2colorized.xml" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="bin\$(Configuration)\csharp2colorized.pdb" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\netstandard1.5\csharp2colorized.pdb" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.runtimeconfig.json" DestinationFiles="bin\$(Configuration)\nupkg\beta\lib\netstandard1.5\csharp2colorized.runtimeconfig.json" />
+    <Copy SkipUnchangedFiles="true" SourceFiles="csharp2colorized.beta.nuspec" DestinationFiles="bin\$(Configuration)\nupkg\beta\csharp2colorized.nuspec" />
+    <Exec Command="$(UserProfile)\.nuget\packages\nuget.commandline\3.3.0\tools\NuGet.exe pack csharp2colorized.nuspec -OutputDirectory ..\.." WorkingDirectory="bin\$(Configuration)\nupkg\beta" Outputs="bin\$(Configuration)\*.nupkg" />
   </Target>
 </Project>
