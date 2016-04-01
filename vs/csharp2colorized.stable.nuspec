@@ -2,7 +2,7 @@
 <package>
  <metadata>
     <id>csharp2colorized</id>
-    <version>1.0.0.1</version>
+    <version>1.0.1</version>
     <title>Colorizer for C#/VB</title>
     <authors>Lucian Wischik</authors>
     <owners>Lucian Wischik</owners>
