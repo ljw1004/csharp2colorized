@@ -2,11 +2,7 @@
 
 This is a command-line utility and a nuget package for colorizing C#. It's goal is to give good colorization even for incomplete code snippets. Here's how it stacks up:
 
-|-----------|-------------|
-| [original] | <span style="white-space:pre; font-family:monospace; font-weight:bold;background-color:#F8F8F8">B b = new B(); ((A)b).P = 1;</span> |
-| **csharp2colorized** | <span style="white-space:pre; font-family:monospace; font-weight:bold;"><span style="color:#2b91af">B</span> b = <span style="color:#0000ff">new</span> <span style="color:#2b91af">B</span>(); ((<span style="color:#2b91af">A</span>)b).P = 1;</span> |
-| Visual Studio | <span style="white-space:pre; font-family:monospace; font-weight:bold;">B b = <span style="color:#0000ff">new</span> B(); ((A)b).P = 1;</span> |
-| GitHub, VSCode | <span style="white-space:pre; font-family:monospace; font-weight: bold;">B b = <span style="color:#a71d5d">new</span> B(); ((A)b).P = <span style="color:#0086b3">1</span>;</span> |
+![comparison](comparison.png)
 
 # How to use the command-line utility
 
