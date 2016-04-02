@@ -120,7 +120,7 @@ namespace CSharp2Colorized
                 else continue;
                 yield return s.Substring(istart, i + b.Length - istart);
                 istart = i + b.Length;
-                i = istart;
+                i = istart-1;
             }
             if (istart < s.Length) yield return s.Substring(istart);
         }
