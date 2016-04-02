@@ -9,23 +9,24 @@ This is a command-line utility and a nuget package for colorizing C#. It's goal 
 You can run the command-line utility in a few ways...
 
 ```
-echo "Console.WriteLine();" | csharp2colorized
-csharp2colorized file1.cs file2.cs file3.vb
-csharp2colorized *.cs
-csharp2colorized -vb *.*
+echo "Console.WriteLine();" | csharp2colorized -cs
+csharp2colorized file1.cs
+csharp2colorized *.cs *.vb
 csharp2colorized tests.md > results.html
 ```
 
 In the final example it's given a markdown file, and will replace all fenced codeblocks in vb/csharp with html `<pre>` tags.
 
+I haven't packaged up the command-line utility for download. You have to build it yourself. As well as working on .NET Framework, it also works on "dotnet-cli" for Windows/OSX/linux.
+
 # How to use the library API programmatically
 
-Programmatically you can call the library API like this:
+Add a NuGet reference to [csharp2colorized](https://www.nuget.org/packages/csharp2colorized). Programmatically you can call the library API like this:
 
 ```csharp
 using CSharp2Colorized;
-var lines = CSharp2Colorized.ColorizeCSharp(code);
-var pre = CSharp2Colorized.Lines2Html(lines);
+var lines = Colorize.CSharp(code);  // or Colorize.VB(code);
+var pre = Colorize.Lines2Html(lines);
 Console.WriteLine($"<html><body>{pre}</body></html>");
 ```
 
